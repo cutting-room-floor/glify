@@ -1,0 +1,26 @@
+{
+  "name": "glify",
+  "version": "0.0.0",
+  "description": "a webgl compiler browserify transform",
+  "main": "index.js",
+  "scripts": {
+    "test": "tap test/*.js"
+  },
+  "keywords": [
+    "webgl",
+    "glsl",
+    "transform",
+    "browserify"
+  ],
+  "author": "Tom MacWright",
+  "license": "ISC",
+  "devDependencies": {
+    "tap": "~0.4.8",
+    "browserify": "~3.38.0"
+  },
+  "dependencies": {
+    "concat-stream": "~1.4.4",
+    "falafel": "~0.3.1",
+    "through": "~2.3.4"
+  }
+}
