@@ -6,11 +6,11 @@ and dumps JSON for browsers.
 
 ## install
 
-  npm install --save-dev glify
+    npm install --save-dev glify
   
 ## use
 
-  browserify -t glify foo.js > bar.js
+    browserify -t glify foo.js > bar.js
   
 ## example
 
