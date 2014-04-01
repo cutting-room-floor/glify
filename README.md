@@ -4,6 +4,16 @@ A [browserify](http://browserify.org/) transform that grabs fragment and
 vertex shaders, compiles and links them with [glsl-unit](https://code.google.com/p/glsl-unit/),
 and dumps JSON for browsers.
 
+## install
+
+    npm install --save-dev glify
+  
+## use
+
+    browserify -t glify foo.js > bar.js
+  
+## example
+
 ```js
 var glify = require('glify');
 
