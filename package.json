@@ -1,6 +1,6 @@
 {
   "name": "glify",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "a webgl compiler browserify transform",
   "main": "index.js",
   "scripts": {
