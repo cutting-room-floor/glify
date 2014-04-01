@@ -1,8 +1,12 @@
 var glslunit = require('./lib/glsl-compiler'),
     through = require('through'),
+    glsl = require('glsl-optimizer'),
     fs = require('fs'),
     path = require('path'),
     falafel = require('falafel');
+
+var target = glsl.TARGET_OPENGLES20,
+    compiler = new glsl.Compiler(target);
 
 module.exports = function (file) {
 
@@ -21,12 +25,7 @@ module.exports = function (file) {
                         fragment = fs.readFileSync(filePath.replace('.*.', '.fragment.'), 'utf8'),
                         vertex = fs.readFileSync(filePath.replace('.*.', '.vertex.'), 'utf8');
 
-                    var compiler = new glslunit.compiler.DemoCompiler(vertex, fragment),
-                        result = compiler.compileProgram(),
-                        compiled = {
-                            vertex: glslunit.Generator.getSourceCode(result.vertexAst),
-                            fragment: glslunit.Generator.getSourceCode(result.fragmentAst)
-                        };
+                    var compiled = optimize(compile(vertex, fragment));
                     node.update(JSON.stringify(compiled));
                 }
             });
@@ -35,6 +34,41 @@ module.exports = function (file) {
         }
     );
 };
+
+function optimize(shader) {
+    var preamble = 'precision highp float;';
+    var vertex_shader = new glsl.Shader(compiler,
+        glsl.VERTEX_SHADER,
+        preamble + '\n' + shader.vertex);
+
+    if (vertex_shader.compiled()) {
+        shader.vertex = vertex_shader.output();
+    } else {
+        throw new Error('failed to optimize vertex shader');
+    }
+    vertex_shader.dispose();
+
+    var fragment_shader = new glsl.Shader(compiler,
+        glsl.FRAGMENT_SHADER,
+        preamble + '\n' + shader.fragment);
+    if (fragment_shader.compiled()) {
+        shader.fragment = fragment_shader.output();
+    } else {
+        throw new Error('failed to optimize fragment shader');
+    }
+    fragment_shader.dispose();
+
+    return shader;
+}
+
+function compile(vertex, fragment) {
+    var compiler = new glslunit.compiler.DemoCompiler(vertex, fragment),
+        result = compiler.compileProgram();
+    return {
+        vertex: glslunit.Generator.getSourceCode(result.vertexAst),
+        fragment: glslunit.Generator.getSourceCode(result.fragmentAst)
+    };
+}
 
 function isCallFor(node, name) {
     var callee = node.callee;
