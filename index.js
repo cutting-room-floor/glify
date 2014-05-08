@@ -18,26 +18,35 @@ module.exports = function (file) {
     var stream = through(
         function write (buf) { data += buf; },
         function end() {
-            var output = falafel(data, function (node) {
-                if (isRequireFor(node, 'glify')) {
-                    node.update('undefined');
-                }
-                if (isCallFor(node, 'glify')) {
-                    var filePath = path.join(dirname, getArgOfType(node, 0, 'Literal')),
-                        fragmentPath = filePath.replace('.*.', '.fragment.'),
-                        fragment = fs.readFileSync(fragmentPath, 'utf8'),
-                        vertexPath = filePath.replace('.*.', '.vertex.'),
-                        vertex = fs.readFileSync(vertexPath, 'utf8');
+            try {
+                var output = falafel(data, function (node) {
+                    if (isRequireFor(node, 'glify')) {
+                        node.update('undefined');
+                    }
+                    if (isCallFor(node, 'glify')) {
+                        var filePath = path.join(dirname, getArgOfType(node, 0, 'Literal')),
+                            fragmentPath = filePath.replace('.*.', '.fragment.'),
+                            fragment = fs.readFileSync(fragmentPath, 'utf8'),
+                            vertexPath = filePath.replace('.*.', '.vertex.'),
+                            vertex = fs.readFileSync(vertexPath, 'utf8');
 
-                    var compiled = optimize(compile(vertex, fragment));
-                    node.update(JSON.stringify(compiled));
+                        try {
+                            var compiled = optimize(compile(vertex, fragment));
+                            node.update(JSON.stringify(compiled));
+                        } catch(e) {
+                            stream.emit('error', 'Error compiling ' + file + '\n' + e);
+                        }
 
-                    stream.emit('file', fragmentPath);
-                    stream.emit('file', vertexPath);
-                }
-            });
-            this.queue(String(output));
-            this.queue(null);
+                        stream.emit('file', fragmentPath);
+                        stream.emit('file', vertexPath);
+                    }
+                });
+                this.queue(String(output));
+                this.queue(null);
+
+            } catch(e) {
+                stream.emit('error', 'Error falafeling ' + file + '\n' + e);
+            }
         }
     );
 
