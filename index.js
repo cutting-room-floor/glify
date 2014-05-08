@@ -1,3 +1,5 @@
+'use strict';
+
 var glslunit = require('./lib/glsl-compiler'),
     through = require('through'),
     glsl = require('glsl-optimizer'),
@@ -13,7 +15,7 @@ module.exports = function (file) {
     var data = '',
         dirname = path.dirname(file);
 
-    return through(
+    var stream = through(
         function write (buf) { data += buf; },
         function end() {
             var output = falafel(data, function (node) {
@@ -22,17 +24,24 @@ module.exports = function (file) {
                 }
                 if (isCallFor(node, 'glify')) {
                     var filePath = path.join(dirname, getArgOfType(node, 0, 'Literal')),
-                        fragment = fs.readFileSync(filePath.replace('.*.', '.fragment.'), 'utf8'),
-                        vertex = fs.readFileSync(filePath.replace('.*.', '.vertex.'), 'utf8');
+                        fragmentPath = filePath.replace('.*.', '.fragment.'),
+                        fragment = fs.readFileSync(fragmentPath, 'utf8'),
+                        vertexPath = filePath.replace('.*.', '.vertex.'),
+                        vertex = fs.readFileSync(vertexPath, 'utf8');
 
                     var compiled = optimize(compile(vertex, fragment));
                     node.update(JSON.stringify(compiled));
+
+                    stream.emit('file', fragmentPath);
+                    stream.emit('file', vertexPath);
                 }
             });
             this.queue(String(output));
             this.queue(null);
         }
     );
+
+    return stream;
 };
 
 function optimize(shader) {
