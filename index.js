@@ -1,3 +1,5 @@
+'use strict';
+
 var glslunit = require('./lib/glsl-compiler'),
     through = require('through'),
     glsl = require('glsl-optimizer'),
@@ -13,33 +15,48 @@ module.exports = function (file) {
     var data = '',
         dirname = path.dirname(file);
 
-    return through(
+    var stream = through(
         function write (buf) { data += buf; },
         function end() {
-            var output = falafel(data, function (node) {
-                if (isRequireFor(node, 'glify')) {
-                    node.update('undefined');
-                }
-                if (isCallFor(node, 'glify')) {
-                    var filePath = path.join(dirname, getArgOfType(node, 0, 'Literal')),
-                        fragment = fs.readFileSync(filePath.replace('.*.', '.fragment.'), 'utf8'),
-                        vertex = fs.readFileSync(filePath.replace('.*.', '.vertex.'), 'utf8');
+            try {
+                var output = falafel(data, function (node) {
+                    if (isRequireFor(node, 'glify')) {
+                        node.update('undefined');
+                    }
+                    if (isCallFor(node, 'glify')) {
+                        var filePath = path.join(dirname, getArgOfType(node, 0, 'Literal')),
+                            fragmentPath = filePath.replace('.*.', '.fragment.'),
+                            fragment = fs.readFileSync(fragmentPath, 'utf8'),
+                            vertexPath = filePath.replace('.*.', '.vertex.'),
+                            vertex = fs.readFileSync(vertexPath, 'utf8');
 
-                    var compiled = optimize(compile(vertex, fragment));
-                    node.update(JSON.stringify(compiled));
-                }
-            });
-            this.queue(String(output));
-            this.queue(null);
+                        try {
+                            var compiled = optimize(compile(vertex, fragment));
+                            node.update(JSON.stringify(compiled));
+                        } catch(e) {
+                            stream.emit('error', 'Error compiling ' + filePath + '\n' + e);
+                        }
+
+                        stream.emit('file', fragmentPath);
+                        stream.emit('file', vertexPath);
+                    }
+                });
+                this.queue(String(output));
+                this.queue(null);
+
+            } catch(e) {
+                stream.emit('error', 'Error falafeling ' + file + '\n' + e);
+            }
         }
     );
+
+    return stream;
 };
 
 function optimize(shader) {
-    var preamble = 'precision highp float;';
     var vertex_shader = new glsl.Shader(compiler,
         glsl.VERTEX_SHADER,
-        preamble + '\n' + shader.vertex);
+        shader.vertex);
 
     if (vertex_shader.compiled()) {
         shader.vertex = vertex_shader.output();
@@ -50,7 +67,7 @@ function optimize(shader) {
 
     var fragment_shader = new glsl.Shader(compiler,
         glsl.FRAGMENT_SHADER,
-        preamble + '\n' + shader.fragment);
+        shader.fragment);
     if (fragment_shader.compiled()) {
         shader.fragment = fragment_shader.output();
     } else {
