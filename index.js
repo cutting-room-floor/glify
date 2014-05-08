@@ -54,10 +54,9 @@ module.exports = function (file) {
 };
 
 function optimize(shader) {
-    var preamble = 'precision highp float;';
     var vertex_shader = new glsl.Shader(compiler,
         glsl.VERTEX_SHADER,
-        preamble + '\n' + shader.vertex);
+        shader.vertex);
 
     if (vertex_shader.compiled()) {
         shader.vertex = vertex_shader.output();
@@ -68,7 +67,7 @@ function optimize(shader) {
 
     var fragment_shader = new glsl.Shader(compiler,
         glsl.FRAGMENT_SHADER,
-        preamble + '\n' + shader.fragment);
+        shader.fragment);
     if (fragment_shader.compiled()) {
         shader.fragment = fragment_shader.output();
     } else {
