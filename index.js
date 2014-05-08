@@ -34,7 +34,7 @@ module.exports = function (file) {
                             var compiled = optimize(compile(vertex, fragment));
                             node.update(JSON.stringify(compiled));
                         } catch(e) {
-                            stream.emit('error', 'Error compiling ' + file + '\n' + e);
+                            stream.emit('error', 'Error compiling ' + filePath + '\n' + e);
                         }
 
                         stream.emit('file', fragmentPath);
