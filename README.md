@@ -20,6 +20,8 @@ optimizes with [glsl-optimizer](https://github.com/kkaefer/glsl-optimizer), and 
 var glify = require('glify');
 
 var shader = glify('./fill.*.glsl');
+
+var lineShader = glify('./line.*.glsl', '#define FOO bar');
 ```
 
 becomes

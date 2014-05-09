@@ -28,10 +28,11 @@ module.exports = function (file) {
                             fragmentPath = filePath.replace('.*.', '.fragment.'),
                             fragment = fs.readFileSync(fragmentPath, 'utf8'),
                             vertexPath = filePath.replace('.*.', '.vertex.'),
-                            vertex = fs.readFileSync(vertexPath, 'utf8');
+                            vertex = fs.readFileSync(vertexPath, 'utf8'),
+                            prepend = getArgOfType(node, 1, 'Literal') || '';
 
                         try {
-                            var compiled = optimize(compile(vertex, fragment));
+                            var compiled = optimize(compile(prepend + vertex, prepend + fragment));
                             node.update(JSON.stringify(compiled));
                         } catch(e) {
                             stream.emit('error', 'Error compiling ' + filePath + '\n' + e);
@@ -98,5 +99,5 @@ function isRequireFor(node, moduleName) {
 
 function getArgOfType(node, index, type) {
     var args = node.arguments;
-    return args[index].type == type && args[index].value;
+    return args[index] && args[index].type == type && args[index].value;
 }
