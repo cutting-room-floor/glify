@@ -5,13 +5,23 @@ var glslunit = require('./lib/glsl-compiler'),
     glsl = require('glsl-optimizer'),
     fs = require('fs'),
     path = require('path'),
-    falafel = require('falafel');
+    falafel = require('falafel'),
+    path = require('path'),
+    callerPath = require('caller-path');
 
 var target = glsl.TARGET_OPENGLES20,
     compiler = new glsl.Compiler(target);
 
-module.exports = function (file) {
+module.exports = function(a, b) {
+    var base = callerPath();
+    if (base.match(/node_modules\/browserify/)) {
+        return browserify(a);
+    } else {
+        return node(a, b, base);
+    }
+};
 
+function browserify(file) {
     var data = '',
         dirname = path.dirname(file);
 
@@ -52,7 +62,16 @@ module.exports = function (file) {
     );
 
     return stream;
-};
+}
+
+function node(filePath, prepend, base) {
+    var fragmentPath = path.resolve(base, '..', filePath.replace('.*.', '.fragment.')),
+        fragment = fs.readFileSync(fragmentPath, 'utf8'),
+        vertexPath = path.resolve(base, '..', filePath.replace('.*.', '.vertex.')),
+        vertex = fs.readFileSync(vertexPath, 'utf8');
+    prepend = prepend || '';
+    return optimize(compile(prepend + vertex, prepend + fragment));
+}
 
 function optimize(shader) {
     var vertex_shader = new glsl.Shader(compiler,

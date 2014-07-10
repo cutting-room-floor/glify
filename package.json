@@ -20,9 +20,10 @@
     "concat-stream": "~1.4.4"
   },
   "dependencies": {
+    "caller-path": "^0.1.0",
     "concat-stream": "~1.4.4",
     "falafel": "~0.3.1",
-    "through": "~2.3.4",
-    "glsl-optimizer": "https://github.com/kkaefer/glsl-optimizer/archive/amalgamation.tar.gz"
+    "glsl-optimizer": "https://github.com/kkaefer/glsl-optimizer/archive/amalgamation.tar.gz",
+    "through": "~2.3.4"
   }
 }
