@@ -9,9 +9,6 @@ var glslunit = require('./lib/glsl-compiler'),
     path = require('path'),
     callerPath = require('caller-path');
 
-var target = glsl.TARGET_OPENGLES20,
-    compiler = new glsl.Compiler(target);
-
 module.exports = function(a, b) {
     var base = callerPath();
     if (base.match(/node_modules\/browserify/)) {
@@ -41,8 +38,10 @@ function browserify(file) {
                             vertex = fs.readFileSync(vertexPath, 'utf8'),
                             prepend = getArgOfType(node, 1, 'Literal') || '';
 
+                        prepend = 'precision mediump float;\n' + prepend;
+
                         try {
-                            var compiled = optimize(compile(prepend + vertex, prepend + fragment));
+                            var compiled = optimize(compile(prepend + vertex, prepend + fragment), glsl.TARGET_OPENGLES20);
                             node.update(JSON.stringify(compiled));
                         } catch(e) {
                             stream.emit('error', 'Error compiling ' + filePath + '\n' + e);
@@ -70,10 +69,13 @@ function node(filePath, prepend, base) {
         vertexPath = path.resolve(base, '..', filePath.replace('.*.', '.vertex.')),
         vertex = fs.readFileSync(vertexPath, 'utf8');
     prepend = prepend || '';
-    return optimize(compile(prepend + vertex, prepend + fragment));
+    prepend = '#version 120\n' + prepend;
+    return optimize(compile(prepend + vertex, prepend + fragment), glsl.TARGET_OPENGL);
 }
 
-function optimize(shader) {
+function optimize(shader, target) {
+    var compiler = new glsl.Compiler(target);
+
     var vertex_shader = new glsl.Shader(compiler,
         glsl.VERTEX_SHADER,
         shader.vertex);
