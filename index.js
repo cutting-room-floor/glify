@@ -2,7 +2,7 @@
 
 var glslunit = require('./lib/glsl-compiler'),
     through = require('through'),
-    glsl = require('glsl-optimizer'),
+    glsl = require('mapbox-glsl-optimizer'),
     fs = require('fs'),
     path = require('path'),
     falafel = require('falafel'),

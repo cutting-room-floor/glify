@@ -3,7 +3,7 @@
 # glify
 
 Compiles and links GLSL shaders with [glsl-unit](https://code.google.com/p/glsl-unit/) and
-optimizes with [glsl-optimizer](https://github.com/kkaefer/glsl-optimizer).
+optimizes with [glsl-optimizer](https://github.com/mapbox/glsl-optimizer).
 
 It can be used either as a browserify transform or as a regular node module.
 
