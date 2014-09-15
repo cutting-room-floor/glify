@@ -11,7 +11,7 @@ var glslunit = require('./lib/glsl-compiler'),
 
 module.exports = function(a, b) {
     var base = callerPath();
-    if (base.match(/node_modules\/browserify/)) {
+    if (base.match(new RegExp('node_modules\\' + path.sep + 'browserify'))) {
         return browserify(a);
     } else {
         return node(a, b, base);
