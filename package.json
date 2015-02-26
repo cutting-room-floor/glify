@@ -1,29 +1,33 @@
 {
   "name": "glify",
-  "version": "0.4.2",
   "description": "a webgl compiler browserify transform",
-  "main": "index.js",
-  "scripts": {
-    "test": "tap test/*.js"
-  },
-  "keywords": [
-    "webgl",
-    "glsl",
-    "transform",
-    "browserify"
-  ],
+  "version": "0.4.2",
   "author": "Tom MacWright",
-  "license": "ISC",
-  "devDependencies": {
-    "tap": "~0.4.8",
-    "browserify": "~3.38.0",
-    "concat-stream": "~1.4.4"
-  },
   "dependencies": {
     "caller-path": "^0.1.0",
     "concat-stream": "~1.4.4",
     "falafel": "~0.3.1",
     "mapbox-glsl-optimizer": "~0.1.0",
     "through": "~2.3.4"
+  },
+  "devDependencies": {
+    "browserify": "~3.38.0",
+    "concat-stream": "~1.4.4",
+    "tap": "~0.4.8"
+  },
+  "keywords": [
+    "browserify",
+    "glsl",
+    "transform",
+    "webgl"
+  ],
+  "license": "ISC",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:mapbox/glify.git"
+  },
+  "scripts": {
+    "test": "tap test/*.js"
   }
 }
