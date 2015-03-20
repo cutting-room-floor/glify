@@ -1,7 +1,7 @@
 {
   "name": "glify",
   "description": "a webgl compiler browserify transform",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "author": "Tom MacWright",
   "dependencies": {
     "caller-path": "^0.1.0",
