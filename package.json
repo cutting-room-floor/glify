@@ -7,7 +7,6 @@
     "caller-path": "^0.1.0",
     "concat-stream": "~1.4.4",
     "falafel": "~0.3.1",
-    "mapbox-glsl-optimizer": "~0.1.0",
     "through": "~2.3.4"
   },
   "devDependencies": {

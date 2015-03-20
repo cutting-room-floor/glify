@@ -2,7 +2,6 @@
 
 var glslunit = require('./lib/glsl-compiler'),
     through = require('through'),
-    glsl = require('mapbox-glsl-optimizer'),
     fs = require('fs'),
     path = require('path'),
     falafel = require('falafel'),
@@ -41,7 +40,7 @@ function browserify(file) {
                         prepend = 'precision mediump float;\n' + prepend;
 
                         try {
-                            var compiled = optimize(compile(prepend + vertex, prepend + fragment), glsl.TARGET_OPENGLES20);
+                            var compiled = compile(prepend + vertex, prepend + fragment);
                             node.update(JSON.stringify(compiled));
                         } catch(e) {
                             stream.emit('error', 'Error compiling ' + filePath + '\n' + e);
@@ -70,34 +69,7 @@ function node(filePath, prepend, base) {
         vertex = fs.readFileSync(vertexPath, 'utf8');
     prepend = prepend || '';
     prepend = '#version 120\n' + prepend;
-    return optimize(compile(prepend + vertex, prepend + fragment), glsl.TARGET_OPENGL);
-}
-
-function optimize(shader, target) {
-    var compiler = new glsl.Compiler(target);
-
-    var vertex_shader = new glsl.Shader(compiler,
-        glsl.VERTEX_SHADER,
-        shader.vertex);
-
-    if (vertex_shader.compiled()) {
-        shader.vertex = vertex_shader.output();
-    } else {
-        throw new Error('failed to optimize vertex shader');
-    }
-    vertex_shader.dispose();
-
-    var fragment_shader = new glsl.Shader(compiler,
-        glsl.FRAGMENT_SHADER,
-        shader.fragment);
-    if (fragment_shader.compiled()) {
-        shader.fragment = fragment_shader.output();
-    } else {
-        throw new Error('failed to optimize fragment shader');
-    }
-    fragment_shader.dispose();
-
-    return shader;
+    return compile(prepend + vertex, prepend + fragment);
 }
 
 function compile(vertex, fragment) {
