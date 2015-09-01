@@ -68,7 +68,7 @@ function node(filePath, prepend, base) {
         vertexPath = path.resolve(base, '..', filePath.replace('.*.', '.vertex.')),
         vertex = fs.readFileSync(vertexPath, 'utf8');
     prepend = prepend || '';
-    prepend = '#version 120\n' + prepend;
+    prepend = 'precision mediump float;\n' + prepend;
     return compile(prepend + vertex, prepend + fragment);
 }
 
