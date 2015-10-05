@@ -10,7 +10,7 @@ var glslunit = require('./lib/glsl-compiler'),
 
 module.exports = function(a, b) {
     var base = callerPath();
-    if (base.match(new RegExp('node_modules\\' + path.sep + 'browserify'))) {
+    if (base.match(new RegExp('node_modules\\' + path.sep + '(browserify|module-deps)'))) {
         return browserify(a);
     } else {
         return node(a, b, base);
