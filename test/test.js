@@ -15,6 +15,6 @@ test('browserified glify', function(t) {
 });
 
 test('nodeified glify', function(t) {
-    t.deepEqual(glify('../example/fill.*.glsl'), result);
+    t.deepEqual(glify.node('../example/fill.*.glsl'), result);
     t.end();
 });

@@ -6,17 +6,10 @@ var glslunit = require('./lib/glsl-compiler'),
     fs = require('fs'),
     path = require('path'),
     falafel = require('falafel'),
-    path = require('path'),
     callerPath = require('caller-path');
 
-module.exports = function(a, b) {
-    var base = callerPath();
-    if (base.match(new RegExp('node_modules\\' + path.sep + 'browserify'))) {
-        return browserify(a);
-    } else {
-        return node(a, b, base);
-    }
-};
+module.exports = browserify;
+module.exports.node = node;
 
 function browserify(file) {
     var data = '',
@@ -63,7 +56,8 @@ function browserify(file) {
     return stream;
 }
 
-function node(filePath, prepend, base) {
+function node(filePath, prepend) {
+    var base = callerPath();
     var fragmentPath = path.resolve(base, '..', filePath.replace('.*.', '.fragment.')),
         fragment = fs.readFileSync(fragmentPath, 'utf8'),
         vertexPath = path.resolve(base, '..', filePath.replace('.*.', '.vertex.')),

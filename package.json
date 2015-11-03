@@ -13,6 +13,7 @@
   "devDependencies": {
     "browserify": "~3.38.0",
     "concat-stream": "~1.4.4",
+    "eslint": "^1.8.0",
     "tap": "~0.4.8"
   },
   "keywords": [
@@ -28,6 +29,6 @@
     "url": "git@github.com:mapbox/glify.git"
   },
   "scripts": {
-    "test": "tap test/*.js"
+    "test": "eslint index.js && tap test/*.js"
   }
 }
